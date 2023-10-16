@@ -1,0 +1,226 @@
+Name: Sahilsing Rajput
+Assignment 
+
+Question 1:
+A developer is assigned a task to scrape 1 lakh website pages from a directory site, while scrapping he is facing such hcaptcha, which are placed to stop people from scrapping As a project Coordinator suggest ways to solve this problem
+Solution :
+To bypass captchas, you can use captcha solving services or browser automation tools like Selenium, Puppeteer, or Playwright. These tools can mimic human behaviour, handle captchas, and interact with websites like a real user.
+Theoretical Solution:
+Integrate a captcha solving service or use browser automation tools to automate solving captchas during scraping. Rotate IP addresses and use user-agent strings to avoid detection. Ensure you comply with the website's terms of service and legal requirements.
+Code:
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+# Set up Selenium WebDriver with a browser of your choice (e.g., Chrome)
+driver = webdriver.Chrome(executable_path="path/to/chromedriver")
+
+# Navigate to the website
+driver.get("https://example.com")
+
+# Wait until the captcha element is visible
+captcha_element = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, "captcha-id"))
+)
+# Solve captcha manually or implement captcha solving service here
+# Once captcha is solved, continue with scraping logic
+
+# Example scraping code
+scraped_data = driver.find_element(By.CSS_SELECTOR, ".data").text
+
+# Close the browser window after scraping
+driver.quit()
+***********************************************************************************************************************************************************************
+
+
+Question 2:
+Our client has around 10k linkedin people profiles, he wants to know the estimated income range of these profiles. Suggest ways on how to do this?
+Solution:
+Data Collection:
+collect LinkedIn profiles of your clients (10k profiles) with features like job titles, industries, and locations.
+Data Enrichment:
+Enrich your data with additional features like education level, years of experience, and skills. This additional information can help refine income estimates.
+Income Data Source:
+Find reliable income data sources (government reports, industry surveys) specific to job titles, industries, and locations. These sources should provide average or median income ranges.
+Data Mapping:
+Map job titles, industries, and locations from LinkedIn profiles to corresponding categories in the income data source.
+Income Estimation:
+Estimate income ranges based on the mapped categories. You can use statistical methods like regression analysis to refine the estimates.
+Code:
+Following is general code to do this task:
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import LabelEncoder
+
+# Load LinkedIn profiles data from CSV
+linkedin_data = pd.read_csv('linkedin_profiles.csv')
+
+# Sample income data (job title, industry, location, income_range)
+income_data = pd.read_csv('income_data.csv')
+
+# Merge LinkedIn data with income data based on job title, industry, and location
+merged_data = pd.merge(linkedin_data, income_data, on=['JobTitle', 'Industry', 'Location'], how='left')
+
+# Encode categorical variables (job title, industry, location) using LabelEncoder
+label_encoders = {}
+for column in ['JobTitle', 'Industry', 'Location']:
+    le = LabelEncoder()
+    merged_data[column] = le.fit_transform(merged_data[column])
+    label_encoders[column] = le
+
+# Split data into features (X) and target (y)
+X = merged_data[['JobTitle', 'Industry', 'Location']]
+y = merged_data['IncomeRange']
+
+# Split the data into training and testing sets (80% train, 20% test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create a linear regression model
+model = LinearRegression()
+
+# Train the model
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+predictions = model.predict(X_test)
+
+# Calculate Mean Squared Error to evaluate the model
+mse = mean_squared_error(y_test, predictions)
+print(f"Mean Squared Error: {mse}")
+
+# Now you can use the trained model to predict income ranges for new LinkedIn profiles
+# For example, to predict income for a new profile:
+# new_profile = pd.DataFrame({'JobTitle': [job_title_code], 'Industry': [industry_code], 'Location': [location_code]})
+# estimated_income_range = model.predict(new_profile)
+
+# Note: Ensure that you reverse transform the predicted income_range if you want it in the original format
+***********************************************************************************************************************************************************************
+
+
+Question 3:
+. We have a list of 1L company names, need to find linkedin company links of these profiles, how to go about this?
+Solution:
+To find LinkedIn company links, you can use LinkedIn's search functionality or a web scraping approach with tools like BeautifulSoup or Scrapy.
+
+Theoretical Solution:
+
+LinkedIn Search: Use LinkedIn's search API or manual search to find company profiles by name.
+Web Scraping: Scrape LinkedIn search results for company names and extract profile URLs.
+
+Code (Using Python and BeautifulSoup):
+import requests
+from bs4 import BeautifulSoup
+
+# Search LinkedIn for a company name
+company_name = "Example Company"
+search_url = f"https://www.linkedin.com/search/results/companies/?keywords={company_name}"
+
+# Send a GET request to LinkedIn
+response = requests.get(search_url)
+
+# Parse the HTML content with BeautifulSoup
+soup = BeautifulSoup(response.content, "html.parser")
+
+# Extract company profile links from search results
+company_links = soup.find_all("a", class_="search-result__result-link")
+
+# Print the LinkedIn profile URLs
+for link in company_links:
+    print(link["href"])
+***********************************************************************************************************************************************************************
+Question 4:
+How to identify list of companies whose tech stack is built on Python. Give names of 5 companies if possible, by your suggested approach
+Solution:
+Data Analysis:
+Analyze the extracted data to identify patterns and frequency of Python-related technologies.
+Rank companies based on the frequency of Python-related technology mentions.
+
+Example Code:
+Use libraries like BeautifulSoup and requests for web scraping.
+Utilize regular expressions or natural language processing tools to extract Python-related keywords.
+Analyze the data to identify companies using Python tech stack.
+
+import requests
+from bs4 import BeautifulSoup
+import re
+
+# Function to scrape job postings and extract Python-related technologies
+def scrape_tech_stack(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    job_descriptions = soup.find_all('div', class_='job-description')
+
+    python_keywords = ['Python', 'Django', 'Flask', 'PyTorch', 'Pandas', 'NumPy']  # Add more Python-related keywords
+
+    companies_tech_stack = {}
+
+    for description in job_descriptions:
+        text = description.get_text().lower()
+        for keyword in python_keywords:
+            if re.search(r'\b' + re.escape(keyword.lower()) + r'\b', text):
+                company_name = description.find_previous('div', class_='company-name').get_text().strip()
+                companies_tech_stack[company_name] = companies_tech_stack.get(company_name, 0) + 1
+
+    # Sort companies by the frequency of Python-related keywords
+    sorted_companies = sorted(companies_tech_stack.items(), key=lambda x: x[1], reverse=True)
+
+    return sorted_companies
+
+# Example usage
+url = 'https://www.indeed.com/jobs?q=python+developer'  # Example URL, replace with the actual job search URL
+companies_tech_stack = scrape_tech_stack(url)
+
+# Print top 5 companies using Python tech stack
+print("Top 5 Companies Using Python Tech Stack:")
+for company, count in companies_tech_stack[:5]:
+    print(f"{company}: {count} mentions")
+
+***********************************************************************************************************************************************************************
+
+Question 5:
+Need to find an AP, through which we can send linkedin messages to other linkedin users
+solution:
+Sending Messages: Use the Messaging API to send messages to LinkedIn users.
+CODE:
+import requests
+# LinkedIn API endpoint for sending messages
+message_api_url = "https://api.linkedin.com/v2/conversations"
+# LinkedIn API credentials
+client_id = "your_client_id"
+client_secret = "your_client_secret"
+access_token = "your_access_token"
+
+# Message data
+receiver_id = "receiver_user_id"
+message_body = "Hello, this is a test message from my LinkedIn messaging app!"
+
+# Set up the headers with authorization token
+headers = {
+    "Authorization": f"Bearer {access_token}",
+    "Content-Type": "application/json"
+}
+
+# Prepare message payload
+message_payload = {
+    "eventCreate": {
+        "type": "MESSAGE",
+        "subtype": "INMAIL",
+        "recipients": [
+            {
+                "entity": "URN",
+                "type": "MEMBER",
+                "com.linkedin.member.Member": f"urn:li:member:{receiver_id}"
+            }
+        ],
+        "message": message_body
+    }
+}
+
+# Send the message
+response = requests.post(message_api_url, json=message_payload, headers=headers)
+
+# Print the response
+print(response.json())
